@@ -13,6 +13,7 @@ app.set('trust proxy', 1)
 const PORT = process.env.PORT || 3000;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
 const MERGE_BRANCHES = ['qa', 'dev', 'main'];
+const REPOS = ['dp-test', 'budget-app']
 const SCRIPT_PATH = path.resolve(__dirname, '..', 'scripts', 'on-merge.sh');
 
 /**
@@ -68,12 +69,14 @@ app.post('/webhook', webhookLimiter, (req, res) => {
     event === 'pull_request' &&
     payload.action === 'closed' &&
     payload.pull_request?.merged === true &&
-    MERGE_BRANCHES.includes(payload.pull_request?.base?.ref)
+    MERGE_BRANCHES.includes(payload.pull_request?.base?.ref) &&
+    REPOS.includes(payload.repository?.name)
   ) {
     const branch = payload.pull_request.base.ref;
     const prNumber = payload.pull_request.number;
     const prTitle = payload.pull_request.title;
     const mergedBy = payload.pull_request.merged_by?.login || 'unknown';
+    const repository = payload.repository?.name || 'unknown';
 
     console.log(`Merge detected: PR #${prNumber} "${prTitle}" → ${branch} by ${mergedBy}`);
 
@@ -83,6 +86,7 @@ app.post('/webhook', webhookLimiter, (req, res) => {
       PR_NUMBER: String(prNumber),
       PR_TITLE: prTitle,
       MERGED_BY: mergedBy,
+      REPOSITORY: repository
     };
 
     // Fire-and-forget: the script runs asynchronously so GitHub receives an
