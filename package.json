@@ -1,0 +1,14 @@
+{
+  "name": "dp-test",
+  "version": "1.0.0",
+  "description": "GitHub webhook listener for merge events on qa, dev, and main branches",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1"
+  }
+}
