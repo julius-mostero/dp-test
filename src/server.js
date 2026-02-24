@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
+app.set('trust proxy', 1)
 
 const PORT = process.env.PORT || 3000;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
@@ -35,7 +36,6 @@ function verifySignature(rawBody, signature) {
 // Capture the raw request body for signature verification before JSON parsing.
 app.use(express.raw({ type: 'application/json' }));
 
-app.set('trust proxy', 1)
 // Rate-limit the webhook endpoint: max 60 requests per minute per IP.
 const webhookLimiter = rateLimit({
   windowMs: 60 * 1000,
